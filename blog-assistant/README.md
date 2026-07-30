@@ -90,7 +90,10 @@ Claude Code로 초안을 쓸 때 참조하는 규칙 문서입니다.
 | `voice-rules.md` | AI 말투 금지 패턴, 말투 특징 |
 | `blog-writer-agent.md` | blog-writer 에이전트 워크플로우 (말투 로드 → 초안 → `output/*.md`) |
 
-말투 샘플(개인 글)은 리포에 커밋하지 않습니다 — `voice-samples.md`로 로컬에 두면 gitignore됩니다.
+말투 샘플과 블로그 전략·예시 글(개인 글)은 이 리포에 커밋하지 않습니다. 원본은 별도 리포
+`everything-claude-code_jm`의 `contexts/` 폴더에 있고, 초안을 쓸 때 그걸 참고합니다. 이 리포 옆에
+따로 두고 싶으면 `voice-samples.md`로 두면 gitignore됩니다. 찾는 순서는
+`prompts/blog-writer-agent.md` Step 1에 정리돼 있습니다.
 
 ## 테스트
 
