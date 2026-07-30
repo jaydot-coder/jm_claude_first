@@ -88,7 +88,7 @@ Claude Code로 초안을 쓸 때 참조하는 규칙 문서입니다.
 | `naver-blog-format.md` | 네이버 포맷·SEO·모바일 줄바꿈 규칙, 이미지 표기 형식 |
 | `seo-strategy.md` | 스마트블록 제목 공식, 상위노출 전략 |
 | `voice-rules.md` | AI 말투 금지 패턴, 말투 특징 |
-| `blog-writer-agent.md` | 기존 blog-writer 에이전트 워크플로우 |
+| `blog-writer-agent.md` | blog-writer 에이전트 워크플로우 (말투 로드 → 초안 → `output/*.md`) |
 
 말투 샘플(개인 글)은 리포에 커밋하지 않습니다 — `voice-samples.md`로 로컬에 두면 gitignore됩니다.
 
