@@ -11,11 +11,25 @@ Galaxy와 iPhone에서 찍은 사진이 Google Drive와 네이버 클라우드�
 
 ## 설치
 
+macOS / Linux / Git Bash:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+PowerShell에서는 `&&`로 명령을 잇지 말고 한 줄씩 실행합니다 (5.1은 `&&`를 지원하지 않습니다).
+위처럼 `.venv\Scripts\python.exe`를 직접 호출하면 가상환경을 활성화하지 않아도 되고, 실행 정책
+때문에 `Activate.ps1`이 막히는 문제도 피할 수 있습니다. 아래 사용법의 `python`도 모두
+`.venv\Scripts\python.exe`로 바꿔 읽으면 됩니다.
 
 ## 최초 1회 설정
 

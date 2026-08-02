@@ -41,6 +41,12 @@ python organize_photos.py review list --config config.yaml
 python organize_photos.py status --config config.yaml
 ```
 
+The owner works on Windows. In PowerShell there is no `&&` (5.1) and no
+`source .venv/bin/activate` — run one command per line and call
+`.venv\Scripts\python.exe` directly instead of activating, which also sidesteps
+the execution-policy block on `Activate.ps1`. Both READMEs carry the PowerShell
+form of the install block.
+
 `config.yaml` (gitignored) is copied from `config.example.yaml` and holds Drive folder IDs and
 local paths — see `photo-organizer/README.md` for the full one-time setup (Google Cloud OAuth
 client, folder IDs, local inbox/library paths).

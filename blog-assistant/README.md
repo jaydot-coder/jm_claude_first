@@ -19,11 +19,23 @@
 
 ## 설치
 
+macOS / Linux / Git Bash:
+
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Windows PowerShell (한 줄씩 — 5.1은 `&&`를 지원하지 않습니다):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+`.venv\Scripts\python.exe`를 직접 호출하면 활성화 없이 바로 쓸 수 있습니다. 아래 사용법의
+`python`도 그렇게 바꿔 읽으면 됩니다.
 
 ## 사용법
 
