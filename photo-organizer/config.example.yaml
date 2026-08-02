@@ -1,0 +1,45 @@
+# Copy this file to config.yaml and fill in your own values.
+# config.yaml is gitignored -- it will contain your real Drive folder IDs and local paths.
+
+# All naive (timezone-less) timestamps from EXIF/filenames are interpreted in this timezone.
+timezone: Asia/Seoul
+
+# Minimum confidence required to auto-file a photo into library/ instead of _review/.
+# One of: high, medium, low, very_low
+min_confidence_for_auto_organize: medium
+
+# Reject any resolved date older than this year (guards against corrupt EXIF/filenames).
+min_valid_year: 2000
+
+# Google Drive folders to pull photos from. Each folder is scanned recursively is NOT
+# assumed -- only direct children are listed. Add one entry per folder you back up to.
+drive_source_folders:
+  - folder_id: "REPLACE_WITH_GALAXY_DRIVE_FOLDER_ID"
+    device_hint: galaxy
+  - folder_id: "REPLACE_WITH_IPHONE_DRIVE_FOLDER_ID"
+    device_hint: iphone
+
+# Local folder where you manually drop photos downloaded from Naver Cloud.
+naver_inbox_dir: "~/naver-blog-photos/naver_inbox"
+
+# Where organized photos end up, in library/YYYY/YYYY-MM-DD/HHMMSS_<device>_<name>.<ext>
+library_root: "~/naver-blog-photos/library"
+
+# Where low-confidence photos end up for manual review, plus review_manifest.csv
+review_root: "~/naver-blog-photos/_review"
+
+# SQLite manifest (idempotency + Drive sync state) and Drive download staging area.
+state_dir: "~/naver-blog-photos/state"
+raw_cache_dir: "~/naver-blog-photos/raw_cache"
+
+# OAuth client secret (from Google Cloud Console) and cached token.
+credentials_dir: "~/naver-blog-photos/credentials"
+
+# Extra filename date patterns, tried after the built-in ones, before Drive/mtime fallback.
+# Each entry needs a name, a Python regex with named groups, and a strptime-compatible
+# format string built from those group names, e.g. group "ts" -> format "%Y%m%d_%H%M%S".
+# custom_filename_patterns:
+#   - name: my_camera
+#     regex: '^MYCAM_(?P<ts>\d{8}_\d{6})'
+#     group: ts
+#     format: "%Y%m%d_%H%M%S"

@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Drafts, previews, exported photos, and personal voice samples stay local.
+output/
+*_preview.html
+*_images/
+voice-samples.md

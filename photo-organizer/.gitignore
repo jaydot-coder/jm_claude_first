@@ -1,0 +1,12 @@
+config.yaml
+credentials/
+state/
+raw_cache/
+library/
+_review/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
