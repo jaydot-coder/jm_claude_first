@@ -5,12 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project status
 
 This repository holds two local Python CLIs that together remove the photo bottleneck from
-the owner's Naver Blog workflow:
+the owner's Naver Blog workflow, plus a checked-in MCP setup for Korean tax-law research:
 
 - **`photo-organizer/`** — pulls photos backed up from two devices (Galaxy, iPhone) via two
   clouds (Google Drive, Naver Cloud) into one true chronological library.
 - **`blog-assistant/`** — renders a blog draft plus its photos into a single self-contained
   preview page and a set of JPEGs numbered in insertion order.
+- **`.mcp.json` + `mcp/`** — two MCP servers giving Claude Code first-hand access to Korean
+  statutes and National Tax Service interpretations. Unrelated to the blog pipeline; it is
+  here because a project-scoped `.mcp.json` is the one MCP config that travels with a clone.
 
 The draft *writing* itself is not automated here: it runs through Claude Code on the owner's
 PC using the prompt assets in `blog-assistant/prompts/`. There is deliberately no server and
@@ -64,6 +67,17 @@ pytest tests/test_image_slots.py::test_missing_file_is_reported_not_guessed  # a
 
 python render_post.py <draft.md> --photos <photo-dir> [--out-dir <dir>]
 ```
+
+## Commands (MCP, run from the repo root)
+
+```bash
+npm ci --prefix mcp                      # one-time per machine: build the taxlaw-nts server
+claude mcp list                          # confirm both servers connect
+npm view korean-law-mcp version          # check for a newer korean-law-mcp to pin
+```
+
+`LAW_OC` (the 법제처 OPEN API key) must be set in the environment before `korean-law` will
+answer — see `mcp/README.md` for how to get one and where to put it. Node.js 20+ required.
 
 ## Architecture — photo-organizer
 
@@ -130,6 +144,32 @@ a folder of numbered JPEGs.
   mistaken for a numbered file that exists. The whole page is self-contained (no external CSS,
   JS, fonts, or image URLs) so it can be dropped in Drive and opened on a phone.
 
+## Architecture — tax-law MCP
+
+Korean tax material splits in two, and either half alone gives a wrong answer, so `.mcp.json`
+registers one server per half:
+
+- **`korean-law`** (`korean-law-mcp`, 법제처 국가법령정보센터 OPEN API) — statute text: the
+  법률/시행령/시행규칙 of 국세기본법·소득세법·법인세법·부가가치세법·조특법, plus court
+  precedents and administrative rules. This is the authoritative layer.
+- **`taxlaw-nts`** (`taxlaw-nts-mcp`, 국세법령정보시스템) — the practitioner layer the 법제처 API
+  does not carry: 국세청 해석례(질의회신), 기본통칙, 조세심판례, 홈택스 상담사례, and
+  point-in-time article versions / 부칙 / article diffs.
+
+Order matters: fix the article text with `korean-law` first, then supplement with `taxlaw-nts`
+— that is the workflow `taxlaw-nts` itself instructs. Before writing a conclusion, run the
+citation checks (`legal_analysis(mode=verify_citations)`, `verify_nts_citations`); a fabricated
+case number is the failure mode that matters most here. Neither server is official, so nothing
+either returns is a substitute for the original text plus a 세무사 review.
+
+Both are pinned on purpose — `korean-law-mcp@4.9.6` by exact npm version in `.mcp.json`,
+`taxlaw-nts-mcp` by commit SHA in `mcp/package.json` — because a legal database that silently
+changes answers between runs is worse than one that needs a manual bump. `taxlaw-nts` is not
+published to npm, hence the `mcp/` npm project and the `npm ci --prefix mcp` build step; its
+`overrides.typescript` pin is load-bearing (TypeScript 6 fails the build on
+`moduleResolution=node10`). `LAW_OC` is read via `${LAW_OC}` expansion so the key stays out of
+git — this repo still contains no committed credentials and no LLM API key.
+
 ## Conventions
 
 - Every module under `src/` is pure/testable except `drive_client.py` (network + OAuth) and the
@@ -143,3 +183,7 @@ a folder of numbered JPEGs.
   `everything-claude-code_jm` repo, deliberately leaving personal writing samples and published
   posts behind.
 - Both tools are copy-only and read their sources without modifying them.
+- The MCP setup follows the same split: `.mcp.json`, `mcp/package.json`, `mcp/package-lock.json`
+  and `.claude/settings.json` are committed so a fresh clone connects the same two servers at
+  the same versions, while the built server (`mcp/node_modules/`) and the `LAW_OC` key stay
+  local.
