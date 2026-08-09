@@ -1,0 +1,2 @@
+# Machine-local Claude Code settings (tool approvals etc.) — never shared.
+.claude/settings.local.json

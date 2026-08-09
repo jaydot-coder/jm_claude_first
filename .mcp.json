@@ -7,11 +7,6 @@
         "LAW_OC": "${LAW_OC}"
       },
       "timeout": 180000
-    },
-    "taxlaw-nts": {
-      "command": "node",
-      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp/node_modules/taxlaw-nts-mcp/build/index.js"],
-      "timeout": 180000
     }
   }
 }

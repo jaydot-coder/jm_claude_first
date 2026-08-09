@@ -11,9 +11,9 @@ the owner's Naver Blog workflow, plus a checked-in MCP setup for Korean tax-law 
   clouds (Google Drive, Naver Cloud) into one true chronological library.
 - **`blog-assistant/`** — renders a blog draft plus its photos into a single self-contained
   preview page and a set of JPEGs numbered in insertion order.
-- **`.mcp.json` + `mcp/`** — two MCP servers giving Claude Code first-hand access to Korean
-  statutes and National Tax Service interpretations. Unrelated to the blog pipeline; it is
-  here because a project-scoped `.mcp.json` is the one MCP config that travels with a clone.
+- **`.mcp.json` + `mcp/`** — an MCP server giving Claude Code first-hand access to Korean
+  statute text for tax research. Unrelated to the blog pipeline; it is here because a
+  project-scoped `.mcp.json` is the one MCP config that travels with a clone.
 
 The draft *writing* itself is not automated here: it runs through Claude Code on the owner's
 PC using the prompt assets in `blog-assistant/prompts/`. There is deliberately no server and
@@ -71,13 +71,13 @@ python render_post.py <draft.md> --photos <photo-dir> [--out-dir <dir>]
 ## Commands (MCP, run from the repo root)
 
 ```bash
-npm ci --prefix mcp                      # one-time per machine: build the taxlaw-nts server
-claude mcp list                          # confirm both servers connect
+claude mcp list                          # confirm the server connects
 npm view korean-law-mcp version          # check for a newer korean-law-mcp to pin
 ```
 
 `LAW_OC` (the 법제처 OPEN API key) must be set in the environment before `korean-law` will
-answer — see `mcp/README.md` for how to get one and where to put it. Node.js 20+ required.
+answer — see `mcp/README.md` for how to get one and where to put it. Node.js 20+ required;
+`npx` fetches the server itself, so there is nothing to install per machine.
 
 ## Architecture — photo-organizer
 
@@ -146,29 +146,25 @@ a folder of numbered JPEGs.
 
 ## Architecture — tax-law MCP
 
-Korean tax material splits in two, and either half alone gives a wrong answer, so `.mcp.json`
-registers one server per half:
+`.mcp.json` registers one server, **`korean-law`** (`korean-law-mcp`, 법제처 국가법령정보센터
+OPEN API): statute text — the 법률/시행령/시행규칙 of 국세기본법·소득세법·법인세법·
+부가가치세법·조특법 — plus court precedents, administrative rules, and 18 decision domains
+including 조세심판례. It reads the official 법제처 API, so for article text there is no more
+accurate path.
 
-- **`korean-law`** (`korean-law-mcp`, 법제처 국가법령정보센터 OPEN API) — statute text: the
-  법률/시행령/시행규칙 of 국세기본법·소득세법·법인세법·부가가치세법·조특법, plus court
-  precedents and administrative rules. This is the authoritative layer.
-- **`taxlaw-nts`** (`taxlaw-nts-mcp`, 국세법령정보시스템) — the practitioner layer the 법제처 API
-  does not carry: 국세청 해석례(질의회신), 기본통칙, 조세심판례, 홈택스 상담사례, and
-  point-in-time article versions / 부칙 / article diffs.
+Before writing a conclusion, run `legal_analysis(mode=verify_citations)`; a fabricated article
+or case number is the failure mode that matters most here. The server is not official, so
+nothing it returns is a substitute for the original text plus a 세무사 review.
 
-Order matters: fix the article text with `korean-law` first, then supplement with `taxlaw-nts`
-— that is the workflow `taxlaw-nts` itself instructs. Before writing a conclusion, run the
-citation checks (`legal_analysis(mode=verify_citations)`, `verify_nts_citations`); a fabricated
-case number is the failure mode that matters most here. Neither server is official, so nothing
-either returns is a substitute for the original text plus a 세무사 review.
-
-Both are pinned on purpose — `korean-law-mcp@4.9.6` by exact npm version in `.mcp.json`,
-`taxlaw-nts-mcp` by commit SHA in `mcp/package.json` — because a legal database that silently
-changes answers between runs is worse than one that needs a manual bump. `taxlaw-nts` is not
-published to npm, hence the `mcp/` npm project and the `npm ci --prefix mcp` build step; its
-`overrides.typescript` pin is load-bearing (TypeScript 6 fails the build on
-`moduleResolution=node10`). `LAW_OC` is read via `${LAW_OC}` expansion so the key stays out of
+The version is pinned (`korean-law-mcp@4.9.6`) because a legal database that silently changes
+answers between runs is worse than one that needs a manual bump. `npx` fetches it, so a fresh
+clone needs no install step. `LAW_OC` is read via `${LAW_OC}` expansion so the key stays out of
 git — this repo still contains no committed credentials and no LLM API key.
+
+Deliberately *not* registered: `taxlaw-nts-mcp`, which would add 국세청 해석례·기본통칙·홈택스
+상담사례 (material the 법제처 API does not carry) but is a new unofficial client that scrapes
+국세법령정보시스템 for want of a public API. `mcp/README.md` records what it would take to add
+later, including the npm/TypeScript pitfalls already hit while trying it.
 
 ## Conventions
 
@@ -183,7 +179,6 @@ git — this repo still contains no committed credentials and no LLM API key.
   `everything-claude-code_jm` repo, deliberately leaving personal writing samples and published
   posts behind.
 - Both tools are copy-only and read their sources without modifying them.
-- The MCP setup follows the same split: `.mcp.json`, `mcp/package.json`, `mcp/package-lock.json`
-  and `.claude/settings.json` are committed so a fresh clone connects the same two servers at
-  the same versions, while the built server (`mcp/node_modules/`) and the `LAW_OC` key stay
-  local.
+- The MCP setup follows the same split: `.mcp.json` and `.claude/settings.json` are committed so
+  a fresh clone connects the same server at the same version, while the `LAW_OC` key stays
+  local in the environment.
