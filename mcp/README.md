@@ -64,6 +64,11 @@ npm view korean-law-mcp version    # 최신 버전 확인 후 .mcp.json의 숫�
   세무사 검토를 거쳐야 합니다. 패키지 README도 같은 경고를 답니다.
 - 법제처 OPEN API는 클라우드 IP를 막는 경우가 있습니다. 집·사무실 PC에서는 문제없지만, 원격
   개발 환경에서 403이 뜬다면 인증키 문제가 아니라 IP 차단일 수 있습니다.
+- **이 서버는 PC의 Claude Code를 전제로 합니다.** Claude Code on the web(원격 실행 환경)에서는
+  기본 네트워크 정책이 `law.go.kr` 로의 접속 자체를 차단해서 모든 조회가 403으로 떨어집니다.
+  인증키를 제대로 넣어도 마찬가지입니다. 웹에서 쓰려면 환경 설정에서 `law.go.kr`을 허용
+  도메인에 넣고 `LAW_OC`를 환경변수로 등록해야 합니다
+  (<https://code.claude.com/docs/en/claude-code-on-the-web>).
 - 도구 호출이 법제처를 여러 번 오가느라 느릴 수 있어 `.mcp.json`에서 타임아웃을 180초로
   올려두었습니다.
 
